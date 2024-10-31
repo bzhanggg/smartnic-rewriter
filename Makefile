@@ -44,6 +44,6 @@ CLANG_LIBS := \
 	-lclangFormat \
 	-Wl,--end-group
 
-stateTrans_basic: stateTrans_basic.cpp
+state_trans_basic: state_trans_basic.cpp
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 	$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
