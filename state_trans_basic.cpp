@@ -34,9 +34,12 @@ class StateDependencyVisitor : public RecursiveASTVisitor<StateDependencyVisitor
         if (DeclRefExpr *operand = dyn_cast<DeclRefExpr>(op->getSubExpr())) {
           if (operand->getNameInfo().getAsString() == "state") {
             FullSourceLoc loc = Context->getFullLoc(op->getExprLoc());
+            loc.dump();
             if (loc.isValid()) {
               llvm::outs() << "Found modification to 'state' at line " << loc.getSpellingLineNumber() << "\n";
             }
+            op->dumpColor();
+            operand->dumpColor();
             rewriteStateModification(TheRewriter, op);
           }
         }
@@ -48,16 +51,26 @@ class StateDependencyVisitor : public RecursiveASTVisitor<StateDependencyVisitor
     ASTContext *Context;
     Rewriter &TheRewriter;
 
+    std::string getSourceTextFromRange(const clang::SourceRange &range, const clang::SourceManager &sourceManager, const clang::LangOptions &langOptions) {
+        if (!range.isValid()) {
+            return "";  // Return empty string if range is invalid
+        }
+        
+        // Extract the text represented by the SourceRange
+        return clang::Lexer::getSourceText( clang::CharSourceRange::getTokenRange(range), sourceManager, langOptions).str();
+    }
+
     void rewriteStateModification(clang::Rewriter &TheRewriter, clang::Stmt *StateModifyingStmt) {
       // get the source range of the modifying statement
       clang::SourceRange range = StateModifyingStmt->getSourceRange();
-
+      llvm::outs() << range.printToString(TheRewriter.getSourceMgr());
+      
       // retrieve the original text
-      std::string originalText = TheRewriter.getRewrittenText(range);
+      std::string originalText = getSourceTextFromRange(range, TheRewriter.getSourceMgr(), TheRewriter.getLangOpts());
+      llvm::outs() << originalText;
       
       // make the transformation
       std::string transformedText = "for (int i = 0; i < NUM_PKTS - 1); i++) {\n" + originalText + ";\n}\n" + originalText + ";";
-
       TheRewriter.ReplaceText(range, transformedText);
     }
 };
