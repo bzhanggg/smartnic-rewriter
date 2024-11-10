@@ -41,8 +41,5 @@ RUN make -C tools clean \
 # Set up working directory for your project
 WORKDIR /smartnic-rewriter
 
-# Copy your project files
-COPY . .
-
 # Default command to keep the container running
 CMD ["/bin/bash"]
