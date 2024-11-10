@@ -1,8 +1,8 @@
-CLANGFULL := $$HOME/smartnic-rewriter/clang+llvm-12.0.0-x86_64-linux-gnu-ubuntu-20.04/
+CLANGFULL := /usr/local/clang-ubuntu-20.04
 
 BASE_PROGRAM_DIR := $$HOME/smartnic-rewriter
 UNITTEST_DIR := $(BASE_PROGRAM_DIR)/progs_for_tests
-UNITTEST_DIR_AT_LINUX_FOLDER := $(BASE_PROGRAM_DIR)/linux-5.4/samples/bpf
+UNITTEST_DIR_AT_LINUX_FOLDER := usr/local/linux-5.4
 
 # Other paths can be derived from the CLANGFULL path above.
 # To run the sample as is, leave the rest of this Makefile
