@@ -1,4 +1,10 @@
 # SmartNIC-Compiler
+To run on docker:
+```
+docker build -t smartnic-rewriter .
+docker run -it --platform linux/amd64 smartnic-rewriter
+```
+
 This repository contains the rewriter.cpp program to translate from one program into another by using clang’s libtooling library.
 
 The uploaded code is able to change part of the code from [xdp_portknock_v1_kern.c](https://github.com/smartnic/bpf-profile/blob/204c1de5a172c5246576d2cf8dff81c392b04c40/samples/xdp_portknock_v1_kern.c)
