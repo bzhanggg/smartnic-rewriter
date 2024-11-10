@@ -11,6 +11,18 @@ sudo apt-get install zlib1g-dev
 sudo apt-get install libelf-dev
 sudo apt-get install clang llvm
 
+sudo apt-get update && apt-get install -y \
+    wget \
+    git \
+    openssh-client \
+    build-essential \
+    libtinfo-dev \
+    zlib1g-dev \
+    libelf-dev \
+    clang \
+    llvm \
+    && rm -rf /var/lib/apt/lists/*
+
 # install linux source code
 # wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-5.4.tar.gz
 # tar -xvf linux-5.4.tar.gz
