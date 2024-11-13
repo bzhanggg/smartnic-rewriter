@@ -12,32 +12,31 @@ using namespace clang;
 
 class StateModificationVisitor : public RecursiveASTVisitor<StateModificationVisitor> {
   public:
-    explicit StateModificationVisitor(ASTContext *Context, Rewriter &R) : Context(Context), TheRewriter(R) {}
+    explicit StateModificationVisitor(Rewriter &R) : TheRewriter(R) {}
 
     bool VisitBinaryOperator(BinaryOperator *op) {
-        if (op->getOpcode() == BO_Assign || op->isCompoundAssignmentOp()) {
-            if (DeclRefExpr *lhs = dyn_cast<DeclRefExpr>(op->getLHS())) {
-                if (lhs->getNameInfo().getAsString() == "state") {
-                    rewriteStateModification(op);
-                }
-            }
+      if (op->getOpcode() == BO_Assign || op->isCompoundAssignmentOp()) {
+        if (DeclRefExpr *lhs = dyn_cast<DeclRefExpr>(op->getLHS())) {
+          if (lhs->getNameInfo().getAsString() == "state") {
+            rewriteStateModification(op);
+          }
         }
-        return true;
+      }
+      return true;
     }
 
     bool VisitUnaryOperator(UnaryOperator *op) {
-        if (op->isIncrementDecrementOp()) {
-            if (DeclRefExpr *operand = dyn_cast<DeclRefExpr>(op->getSubExpr())) {
-                if (operand->getNameInfo().getAsString() == "state") {
-                    rewriteStateModification(op);
-                }
-            }
+      if (op->isIncrementDecrementOp()) {
+        if (DeclRefExpr *operand = dyn_cast<DeclRefExpr>(op->getSubExpr())) {
+          if (operand->getNameInfo().getAsString() == "state") {
+            rewriteStateModification(op);
+          }
         }
-        return true;
+      }
+      return true;
     }
   
   private:
-    ASTContext *Context;
     Rewriter &TheRewriter;
 
     void rewriteStateModification(clang::Stmt *StateModifyingStmt) {
@@ -46,45 +45,48 @@ class StateModificationVisitor : public RecursiveASTVisitor<StateModificationVis
       clang::SourceManager &sourceManager = TheRewriter.getSourceMgr();
       LangOptions langOptions = TheRewriter.getLangOpts();
 
-      std::string originalText = Lexer::getSourceText(
-        CharSourceRange::getTokenRange(range), sourceManager, langOptions).str();
+      CharSourceRange charRange = CharSourceRange::getTokenRange(range);
+      std::string originalText = Lexer::getSourceText(charRange, sourceManager, langOptions).str();
 
-        std::string transformedText = "for (int i = 0; i < NUM_PKTS - 1; i++) {\n" + originalText + ";\n}\n" + originalText + ";";
-
-        TheRewriter.ReplaceText(range, transformedText);
+      std::string transformedText = "for (int i = 0; i < NUM_PKTS - 1; i++) {\n\t\t" + originalText + ";\n\t}\n\t" + originalText;
+      TheRewriter.ReplaceText(range, transformedText);
     }
 };
 
 class StateModificationConsumer : public ASTConsumer {
   public:
-    explicit StateModificationConsumer(ASTContext *Context, Rewriter &R)
-        : Visitor(Context, TheRewriter), Context(Context), TheRewriter(R) {}
+    explicit StateModificationConsumer(Rewriter &R) : Visitor(R) {}
 
-    virtual void HandleTranslationUnit(ASTContext &C) override {
-        Visitor.TraverseDecl(C.getTranslationUnitDecl());
+    virtual void HandleTranslationUnit(ASTContext &Context) override {
+      Visitor.TraverseDecl(Context.getTranslationUnitDecl());
     }
 
   private:
     StateModificationVisitor Visitor;
-    ASTContext *Context;
-    Rewriter &TheRewriter;
 };
 
 class StateModificationAction : public ASTFrontendAction {
-  public:
-    StateModificationAction() {}
+public:
+  // `RC` (rewrittenCode) will be updated after a compiler pass
+  StateModificationAction(std::string &RC) : RewrittenCode(RC) {}
 
   void EndSourceFileAction() override {
-    TheRewriter.getEditBuffer(TheRewriter.getSourceMgr().getMainFileID()).write(llvm::outs());
+    SourceManager &SM = TheRewriter.getSourceMgr();
+    // emit the rewrittenbuffer to a string
+    RewrittenCode = "";
+    llvm::raw_string_ostream *strStream = new llvm::raw_string_ostream(RewrittenCode);
+    TheRewriter.getEditBuffer(SM.getMainFileID()).write(*strStream);
+    llvm::errs() << "RewrittenCode: " << RewrittenCode << "\n";
   }
 
-  virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, llvm::StringRef file) override {
+  virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, StringRef file) override {
     TheRewriter.setSourceMgr(CI.getSourceManager(), CI.getLangOpts());
-    return std::make_unique<StateModificationConsumer>(&CI.getASTContext(), TheRewriter);
+    return std::make_unique<StateModificationConsumer>(TheRewriter);
   }
 
 private:
   Rewriter TheRewriter;
+  std::string& RewrittenCode;
 };
 
 int main(int argc, const char **argv) {
@@ -99,15 +101,24 @@ int main(int argc, const char **argv) {
     std::cerr << "Error: Could not open file " << argv[1] << "\n";
     return EXIT_FAILURE;
   }
+  std::string outputFile = "code.out";
+  outputFile = argv[1];
+  outputFile += ".out";
 
   std::stringstream buf;
   buf << file.rdbuf();
   std::string code = buf.str();
+  std::string rewrittenCode;
 
   // run on input
   if (argc > 1) {
-    clang::tooling::runToolOnCode(std::make_unique<StateModificationAction>(), code);
+    clang::tooling::runToolOnCode(std::make_unique<StateModificationAction>(rewrittenCode), code);
   }
 
+  std::ofstream fout;
+  fout.open(outputFile);
+  fout << rewrittenCode;
+  fout.close();
+  llvm::errs() << "MOdification ends: " << outputFile << " is the output code." << "\n";
   return 0;
 }
