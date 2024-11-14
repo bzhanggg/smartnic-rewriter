@@ -1,8 +1,5 @@
-#include <sstream>
-#include <string>
-#include <typeinfo>
-#include <iostream>
-#include <fstream>
+#ifndef COMPILER_PASS_H
+#define COMPILER_PASS_H
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -14,6 +11,12 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/raw_ostream.h"
+
+#include <sstream>
+#include <string>
+#include <typeinfo>
+#include <iostream>
+#include <fstream>
 
 using namespace clang;
 using namespace clang::driver;
@@ -36,4 +39,6 @@ template <typename T> std::string compilerPass(const std::string& sourceCode);
  * \param argv: the array of character pointers listing all args
  * \return The modified code after a compiler pass
  */
-template <typname T> std::string compilerPass(int argc, const char **argv);
+template <typename T> std::string compilerPass(int argc, const char **argv);
+
+#endif

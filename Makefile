@@ -44,6 +44,14 @@ CLANG_LIBS := \
 	-lclangFormat \
 	-Wl,--end-group
 
-state_trans_basic: state_trans_basic.cpp
+COMPILER_LIBS := compilerPass.h compilerPass.cpp
+
+TARGETS := rewriter
+
+rewriter: rewriter.cpp $(COMPILER_LIBS)
+	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
+	$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
+
+state_trans_basic: state_trans_basic.cpp $(COMPILER_LIBS)
 	$(CXX) $(CXXFLAGS) $(LLVM_CXXFLAGS) $(CLANG_INCLUDES) $^ \
 	$(CLANG_LIBS) $(LLVM_LDFLAGS) -o $@
