@@ -15,6 +15,12 @@ public:
     return true;
   }
 
+  // TODO: figure out how this plays into the state_trans_basic.cpp file
+  // see link: https://stackoverflow.com/questions/37802947/visitdecl-vs-traversedecl-clang-recursiveastvisitor
+  virtual void HandleTranslationUnit(ASTContext &Context) override {
+    Visitor.TraverseDecl(Context.getTranslationUnitDecl());
+  }
+
 private:
   T Visitor;
 };

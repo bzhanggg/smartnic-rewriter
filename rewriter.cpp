@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 
+#include "compilerPass.h"
+#include "changeStateVariable.h"
+
 int main(int argc, const char **argv) {
   if (argc < 2) {
     std::cerr << "Usage: " << argv[0] << "<source-file>\n";
@@ -22,7 +25,14 @@ int main(int argc, const char **argv) {
   ////////////////////////////////////////////////
   // COMPILER PASSES BEGIN HERE
   ////////////////////////////////////////////////
-  std::string code = compilerPass<>(argc, argv);
+  std::string code = compilerPass<ChangeStateVisitor>(argc, argv);
+  llvm::errs() << "\nAfter modification, code is modified to \n" << code << "\n";
 
+  std::ofstream fout;
+  fout.open(outputFile);
+  fout << code;
+  fout.close();
+  llvm::errs() << "Moficiation ends: " << outputFile << " is the output code." << "\n";
+  return 0;
 }
 
