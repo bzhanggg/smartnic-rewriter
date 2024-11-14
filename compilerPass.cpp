@@ -94,7 +94,7 @@ template<typename T> std::string compilerPass(const std::string& sourceCode) {
  * \return The modified code after a compiler pass
  */
 template<typename T> std::string compilerPass(int argc, const char **argv) {
-  CommonOptionsParser op(argc, argv, llvm::cl::ToolingSampleCategory);
+  CommonOptionsParser op(argc, argv, ToolingSampleCategory);
   ClangTool Tool(op.getCompilations(), op.getSourcePathList());
 
   std::string rewrittenCode;

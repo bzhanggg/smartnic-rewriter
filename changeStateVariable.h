@@ -17,7 +17,7 @@ using namespace clang;
 
 class ChangeStateVisitor : public RecursiveASTVisitor<ChangeStateVisitor> {
 public:
-  explicit ChangeStateVisitor(Rewriter &R);
+  explicit ChangeStateVisitor(Rewriter &R) : TheRewriter(R) {}
   bool VisitBinaryOperator(BinaryOperator *op);
   bool VisitUnaryOperator(UnaryOperator *op);
 
