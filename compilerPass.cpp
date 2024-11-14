@@ -70,6 +70,8 @@ template<typename T> std::unique_ptr<FrontendActionFactory> GenericFrontendActio
   private:
     std::string& RewrittenCode;
   };
+
+  return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(RC));
 }
 
 /**

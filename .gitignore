@@ -1,4 +1,5 @@
 /clang+llvm-*
 /linux-*``
+.vscode
 rewriter
 state_trans_basic

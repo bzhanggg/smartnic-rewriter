@@ -32,7 +32,7 @@ int main(int argc, const char **argv) {
   fout.open(outputFile);
   fout << code;
   fout.close();
-  llvm::errs() << "Moficiation ends: " << outputFile << " is the output code." << "\n";
+  llvm::errs() << "Modification ends: " << outputFile << " is the output code." << "\n";
   return 0;
 }
 
