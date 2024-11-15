@@ -44,7 +44,7 @@ CLANG_LIBS := \
 	-lclangFormat \
 	-Wl,--end-group
 
-COMPILER_LIBS := compilerPass.h compilerPass.cpp changeStateVariable.h changeStateVariable.cpp
+COMPILER_LIBS := compilerPass.cpp changeStateVariable.cpp
 
 TARGETS := rewriter
 

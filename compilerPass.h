@@ -1,5 +1,4 @@
-#ifndef COMPILER_PASS_H
-#define COMPILER_PASS_H
+#pragma once
 
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -40,5 +39,3 @@ template <typename T> std::string compilerPass(const std::string& sourceCode);
  * \return The modified code after a compiler pass
  */
 template <typename T> std::string compilerPass(int argc, const char **argv);
-
-#endif

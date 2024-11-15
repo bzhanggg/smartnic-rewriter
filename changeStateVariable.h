@@ -1,5 +1,4 @@
-#ifndef CHANGE_STATE_VARIABLE_H
-#define CHANGE_STATE_VARIABLE_H
+#pragma once
 
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/RecursiveASTVisitor.h"
@@ -17,7 +16,7 @@ using namespace clang;
 
 class ChangeStateVisitor : public RecursiveASTVisitor<ChangeStateVisitor> {
 public:
-  explicit ChangeStateVisitor(Rewriter &R) : TheRewriter(R) {}
+  explicit ChangeStateVisitor(Rewriter &R);
   bool VisitBinaryOperator(BinaryOperator *op);
   bool VisitUnaryOperator(UnaryOperator *op);
 
@@ -25,5 +24,3 @@ private:
   Rewriter &TheRewriter;
   void rewriteStateChange(clang::Stmt *StateChangingStmt);
 };
-
-#endif
