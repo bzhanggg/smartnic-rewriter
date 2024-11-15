@@ -103,3 +103,6 @@ template<typename T> std::string compilerPass(int argc, const char **argv) {
   Tool.run(GenericFrontendActionFactory<GenericFrontendAction<T>>(rewrittenCode).get());
   return rewrittenCode;
 }
+
+template std::string compilerPass<ChangeStateVisitor>(const std::string& sourceCode);
+template std::string compilerPass<ChangeStateVisitor>(int argc, const char **argv);

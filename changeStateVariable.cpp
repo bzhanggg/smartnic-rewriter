@@ -1,7 +1,10 @@
 #include "changeStateVariable.h"
 
-
-ChangeStateVisitor::ChangeStateVisitor(Rewriter &R) : TheRewriter(R) {}
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include <streambuf>
+#include <iterator>
 
 bool ChangeStateVisitor::VisitBinaryOperator(BinaryOperator *op) {
   if (op->getOpcode() == BO_Assign || op->isCompoundAssignmentOp()) {

@@ -11,6 +11,8 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include "changeStateVariable.h"
+
 #include <sstream>
 #include <string>
 #include <typeinfo>

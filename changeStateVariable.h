@@ -6,17 +6,11 @@
 #include "clang/Rewrite/Core/Rewriter.h"
 #include "clang/Tooling/Tooling.h"
 
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <streambuf>
-#include <iterator>
-
 using namespace clang;
 
 class ChangeStateVisitor : public RecursiveASTVisitor<ChangeStateVisitor> {
 public:
-  explicit ChangeStateVisitor(Rewriter &R);
+  explicit ChangeStateVisitor(Rewriter &R) : TheRewriter(R) {}
   bool VisitBinaryOperator(BinaryOperator *op);
   bool VisitUnaryOperator(UnaryOperator *op);
 
